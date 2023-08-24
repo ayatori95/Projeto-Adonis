@@ -15,6 +15,6 @@ test.group('Users', () => {
     chai.assert.exists(body.user.id,'Token undefined')
     chai.assert.equal(body.user.email, userPayload.email)
     chai.assert.equal(body.user.name, userPayload.name)
-    chai.assert.equal(body.user.password,userPayload.password)
+    chai.assert.notExists(body.user.password, 'Password should not be returned')
   })
 })
