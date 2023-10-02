@@ -32,6 +32,19 @@ test.group('Users', (group) => {
     assert.assert.equal(body.status, 409)
   })
 
+  test('it shoud return 409 when trying to create a user with an existing name', async (assert) => {
+    const {name} = await UserFactory.create()
+    const {body} = await supertest(BASE_URL).post('/users').send({
+      name,
+      email: 'test@test.com',
+      password: 'test'
+    }).expect(409)
+
+    assert.assert.include(body.message, 'Name already exists')
+    assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+    assert.assert.equal(body.status, 409)
+  })
+
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
     return () => Database.rollbackGlobalTransaction()
