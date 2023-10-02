@@ -1,12 +1,12 @@
 import { test } from '@japa/runner';
 import supertest from 'supertest';
 import chai from 'chai';
-import User from 'App/Models/User';
-const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 import {UserFactory} from 'Database/factories/index'
+import Database from '@ioc:Adonis/Lucid/Database'
 
+const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 
-test.group('Users', () => {
+test.group('Users', (group) => {
   test('it shoub be able to create a new user', async () => {
     const userPayload = {
       name: 'John Doe',
@@ -26,5 +26,14 @@ test.group('Users', () => {
       email,
       password: 'test'
     }).expect(409)
+
+    assert.assert.include(body.message, 'Email already exists')
+    assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+    assert.assert.equal(body.status, 409)
+  })
+
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction()
+    return () => Database.rollbackGlobalTransaction()
   })
 })
