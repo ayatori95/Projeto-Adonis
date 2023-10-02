@@ -45,6 +45,12 @@ test.group('Users', (group) => {
     assert.assert.equal(body.status, 409)
   })
 
+  test('it shoud return 422 when required date is not provided', async (assert) => {
+    const {body} = await supertest(BASE_URL).post('/users').send({}).expect(422)
+    assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+    assert.assert.equal(body.status, 422)
+  })
+
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
     return () => Database.rollbackGlobalTransaction()
