@@ -15,9 +15,22 @@
 
 import Logger from '@ioc:Adonis/Core/Logger'
 import HttpExceptionHandler from '@ioc:Adonis/Core/HttpExceptionHandler'
+import { Exception } from '@adonisjs/core/build/standalone'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class ExceptionHandler extends HttpExceptionHandler {
   constructor() {
     super(Logger)
+  }
+
+  public async handle(error: Exception, ctx: HttpContextContract) {
+    if (error.status == 422) 
+    return ctx.response.status(error.status).send({
+      errors: error['messages']?.errors ? error['messages'].errors : '',
+      code: "BAD_REQUEST_ERROR",
+      status: error.status,
+      message: error.message,
+    })
+    return super.handle(error, ctx)
   }
 }

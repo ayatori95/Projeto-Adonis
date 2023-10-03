@@ -1,11 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import User from 'App/Models/User'
-import CreateUserValidator from 'App/Validators/CreateUserValidator'
+import CreateUser from 'App/Validators/CreateUserValidator'
 
 export default class UsersController {
     public async store({ request, response }: HttpContextContract) {
-        const userPayload = await request.validate(CreateUserValidator)
+        const userPayload = await request.validate(CreateUser)
 
         const userByEmail = await User.findBy('email', userPayload.email)
         const userByName = await User.findBy('name', userPayload.name)

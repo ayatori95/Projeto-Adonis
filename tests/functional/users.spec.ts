@@ -50,7 +50,27 @@ test.group('Users', (group) => {
     assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
     assert.assert.equal(body.status, 422)
   })
-
+  
+  test('it shoud return 422 when providing an invalid email', async (assert) => {
+    const {body} = await supertest(BASE_URL).post('/users').send({
+      email: 'invalid_email',
+      password: 'testinger',
+      name: 'John Doe'
+    }).expect(422)
+    assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+    assert.assert.equal(body.status, 422)
+  })
+ 
+  test('it shoud return 422 when providing an invalid password', async (assert) => {
+    const {body} = await supertest(BASE_URL).post('/users').send({
+      email: 'test@test.com',
+      password: 'test',
+      name: 'John Doe'
+    }).expect(422)
+    assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+    assert.assert.equal(body.status, 422)
+  })
+  
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
     return () => Database.rollbackGlobalTransaction()
