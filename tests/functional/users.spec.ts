@@ -70,9 +70,24 @@ test.group('Users', (group) => {
     assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
     assert.assert.equal(body.status, 422)
   })
-  
+
+  test ("it should update an user", async (assert) => {
+    const {id, password} = await UserFactory.create()
+    const email = "test@test.com"
+
+    const {body} = await supertest(BASE_URL).put(`/users/${id}`).send({
+      email,
+      password,
+      }).expect(200)
+    assert.assert.exists(body.user, 'User undefined')
+    assert.assert.equal(body.user.email, email)
+    assert.assert.equal(body.user.id, id)
+  }).pin()
+
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
     return () => Database.rollbackGlobalTransaction()
   })
-})
+    
+
+}) 
