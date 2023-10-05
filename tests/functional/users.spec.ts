@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import chai from 'chai';
 import {UserFactory} from 'Database/factories/index'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Hash from '@ioc:Adonis/Core/Hash'
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 
@@ -82,7 +83,24 @@ test.group('Users', (group) => {
     assert.assert.exists(body.user, 'User undefined')
     assert.assert.equal(body.user.email, email)
     assert.assert.equal(body.user.id, id)
+  })
+
+  test ("it should update the password of the user", async (assert) => {
+    const user = await UserFactory.create()
+    const password = "testiing"
+
+    const {body} = await supertest(BASE_URL).put(`/users/${user.id}`).send({
+      email: user.email,
+      password,
+      }).expect(200)
+    assert.assert.exists(body.user, 'User undefined')
+    assert.assert.equal(body.user.id, user.id)
+
+    await user.refresh()
+    assert.assert.isTrue(await Hash.verify(user.password, password))
   }).pin()
+
+
 
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
