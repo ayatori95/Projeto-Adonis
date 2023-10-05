@@ -4,6 +4,7 @@ import chai from 'chai';
 import {UserFactory} from 'Database/factories/index'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Hash from '@ioc:Adonis/Core/Hash'
+import { assert } from '@japa/preset-adonis';
 
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`;
 
@@ -98,9 +99,16 @@ test.group('Users', (group) => {
 
     await user.refresh()
     assert.assert.isTrue(await Hash.verify(user.password, password))
+  })
+
+  test (" it should return 422 when required data is not provided", async (assert) => {
+    const {id} = await UserFactory.create()
+
+    const {body} = await supertest(BASE_URL).put(`/users/${id}`).send({}).expect(422)
+     assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
+     assert.assert.equal(body.status, 422)
+
   }).pin()
-
-
 
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
