@@ -108,7 +108,7 @@ test.group('Users', (group) => {
      assert.assert.equal(body.code, 'BAD_REQUEST_ERROR')
      assert.assert.equal(body.status, 422)
 
-  }).pin()
+  })
 
   group.each.setup(async () => {
     await Database.beginGlobalTransaction()
